@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Documentation: Threat Intelligence Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Color Palette - Premium Cyber Dark Mode */
+            --bg-dark: #090a0f;
+            --bg-glass: rgba(18, 20, 31, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f2f5;
+            --text-secondary: #a0aabf;
+            
+            /* Accent Colors */
+            --accent-red: #ff4b4b;
+            --accent-orange: #ff9900;
+            --accent-purple: #b254ff;
+            --accent-cyan: #00f0ff;
+            --accent-green: #00ff88;
+
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --spacing-lg: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            background-position: center;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-icon {
+            color: var(--accent-cyan);
+            filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.5));
+            width: 56px;
+            height: 56px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ffffff, #a0aabf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        h2 i {
+            color: var(--accent-purple);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border-top: 3px solid var(--accent-cyan);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .feature-card:nth-child(2) { border-top-color: var(--accent-red); }
+        .feature-card:nth-child(3) { border-top-color: var(--accent-orange); }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin-top: 24px;
+        }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 2.5rem; }
+            .container { padding: 40px 16px; }
+            .glass-panel { padding: 24px; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .tech-tag {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: rgba(0, 240, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 40px;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link"><i data-lucide="arrow-left" style="width: 18px;"></i> Back to Dashboard</a>
+        
+        <header>
+            <i data-lucide="shield-alert" class="logo-icon"></i>
+            <h1>Project Overview</h1>
+            <p class="subtitle">Architectural & Functional Documentation for the Threat Intelligence Dashboard</p>
+        </header>
+
+        <section class="glass-panel" style="animation: fadeInDown 0.8s ease-out 0.2s both;">
+            <h2><i data-lucide="info"></i> Executive Summary</h2>
+            <p>The <strong>Threat Intelligence Dashboard</strong> is a centralized, high-performance web application designed to ingest, process, and visualize critical security data in real-time. Built to empower security analysts, the platform focuses on highlighting emerging threat vectors such as active phishing URLs, malicious IPs, and zero-day malware hashes.</p>
+            <p>By leveraging a modern, dark-themed UI with glassmorphism elements, the application ensures that critical data stands out. The interface provides a cinematic, premium feel without compromising on load times or usability.</p>
+        </section>
+
+        <div class="charts-row" style="animation: fadeInDown 0.8s ease-out 0.4s both;">
+            <section class="glass-panel">
+                <h2><i data-lucide="database"></i> Data Sources</h2>
+                <p>Visualization of the diverse data pipelines feeding the threat ecosystem.</p>
+                <div class="chart-container">
+                    <canvas id="dataSourcesChart"></canvas>
+                </div>
+            </section>
+            <section class="glass-panel">
+                <h2><i data-lucide="activity"></i> System Processing Latency</h2>
+                <p>Real-time pipeline metrics processing latency across modules.</p>
+                <div class="chart-container">
+                    <canvas id="processingChart"></canvas>
+                </div>
+            </section>
+        </div>
+
+        <section class="glass-panel" style="animation: fadeInDown 0.8s ease-out 0.6s both;">
+            <h2><i data-lucide="layers"></i> Core Modules & Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3><i data-lucide="globe" style="color: var(--accent-cyan)"></i> Active Monitoring</h3>
+                    <p>Live sync capabilities tracking global malicious IPs and generating real-time geolocation blocking recommendations based on threat confidence scoring.</p>
+                </div>
+                <div class="feature-card">
+                    <h3><i data-lucide="crosshair" style="color: var(--accent-red)"></i> MITRE ATT&CK Maps</h3>
+                    <p>Automated mapping of detected anomalous behaviors to the MITRE ATT&CK framework, enabling rapid tactical response and adversary profiling.</p>
+                </div>
+                <div class="feature-card">
+                    <h3><i data-lucide="trending-up" style="color: var(--accent-orange)"></i> Predictive Analytics</h3>
+                    <p>Analyzing ransomware attack trends over rolling 12-month periods to forecast and prepare defenses for highly targeted sector attacks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel" style="animation: fadeInDown 0.8s ease-out 0.8s both;">
+            <h2><i data-lucide="code-2"></i> Technology Stack</h2>
+            <p>The dashboard utilizes a modern, lightweight frontend stack emphasizing visual excellence, rapid deployment, and minimal dependency overhead.</p>
+            <div class="tech-stack">
+                <span class="tech-tag">HTML5 Semantic</span>
+                <span class="tech-tag">CSS3 Glassmorphism</span>
+                <span class="tech-tag">Vanilla JavaScript</span>
+                <span class="tech-tag">Chart.js 4.x</span>
+                <span class="tech-tag">Lucide Icons</span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Chart.js Default Typography
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#a0aabf';
+
+        // Chart 1: Data Sources Doughnut
+        const ctx1 = document.getElementById('dataSourcesChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['OSINT Feeds', 'Internal Sensors', 'Third-Party APIs', 'User Reports'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: [
+                        '#00f0ff', // Cyan
+                        '#b254ff', // Purple
+                        '#ff9900', // Orange
+                        '#ff4b4b'  // Red
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            color: '#a0aabf', 
+                            padding: 20, 
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 20, 31, 0.9)',
+                        titleFont: { size: 14, family: 'Inter' },
+                        bodyFont: { size: 13, family: 'Inter' },
+                        padding: 12,
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1
+                    }
+                },
+                cutout: '72%'
+            }
+        });
+
+        // Chart 2: Processing Load Line Chart
+        const ctx2 = document.getElementById('processingChart').getContext('2d');
+        
+        // Gradient for line area
+        const gradient = ctx2.createLinearGradient(0, 0, 0, 350);
+        gradient.addColorStop(0, 'rgba(0, 255, 136, 0.3)'); // Green glow
+        gradient.addColorStop(1, 'rgba(0, 255, 136, 0.0)');
+
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                datasets: [{
+                    label: 'Latency (ms)',
+                    data: [12, 18, 14, 25, 21, 32, 17],
+                    borderColor: '#00ff88',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#090a0f',
+                    pointBorderColor: '#00ff88',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 20, 31, 0.9)',
+                        padding: 12,
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
