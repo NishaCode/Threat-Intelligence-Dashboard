@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Intelligence Dashboard</title>
+    <meta name="description" content="Advanced Threat Intelligence Dashboard visualizing phishing, malicious IPs, malware, ransomware trends, and MITRE ATT&CK mappings.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i data-lucide="shield-alert" class="logo-icon"></i>
+                <span>ThreatIntel</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="#" class="nav-item"><i data-lucide="link"></i> Phishing URLs</a>
+                <a href="#" class="nav-item"><i data-lucide="globe"></i> Malicious IPs</a>
+                <a href="#" class="nav-item"><i data-lucide="file-code"></i> Malware Hashes</a>
+                <a href="#" class="nav-item"><i data-lucide="trending-up"></i> Ransomware</a>
+                <a href="#" class="nav-item"><i data-lucide="crosshair"></i> MITRE ATT&CK</a>
+            </nav>
+            <div class="system-status">
+                <div class="status-indicator online"></div>
+                <span>System Online - Live Sync</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1>Overview</h1>
+                    <p class="subtitle">Real-time global threat landscape analysis</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" id="refreshBtn">
+                        <i data-lucide="refresh-cw"></i> Refresh Data
+                    </button>
+                </div>
+            </header>
+
+            <div class="metrics-grid">
+                <!-- Phishing URLs Card -->
+                <div class="glass-card stat-card border-red">
+                    <div class="stat-header">
+                        <h3>Active Phishing URLs</h3>
+                        <i data-lucide="link" class="icon-red"></i>
+                    </div>
+                    <div class="stat-value" id="phishing-count">1,248</div>
+                    <div class="stat-trend trend-up"><i data-lucide="arrow-up-right"></i> 12% vs last week</div>
+                </div>
+
+                <!-- Malicious IPs Card -->
+                <div class="glass-card stat-card border-orange">
+                    <div class="stat-header">
+                        <h3>Blocked IPs</h3>
+                        <i data-lucide="globe" class="icon-orange"></i>
+                    </div>
+                    <div class="stat-value" id="ip-count">8,932</div>
+                    <div class="stat-trend trend-down"><i data-lucide="arrow-down-right"></i> 5% vs last week</div>
+                </div>
+
+                <!-- Malware Hashes Card -->
+                <div class="glass-card stat-card border-purple">
+                    <div class="stat-header">
+                        <h3>New Malware Hashes</h3>
+                        <i data-lucide="file-code" class="icon-purple"></i>
+                    </div>
+                    <div class="stat-value" id="hash-count">456</div>
+                    <div class="stat-trend trend-up"><i data-lucide="arrow-up-right"></i> 8% vs last week</div>
+                </div>
+
+                <!-- Critical Alerts Card -->
+                <div class="glass-card stat-card border-cyan">
+                    <div class="stat-header">
+                        <h3>Critical Alerts</h3>
+                        <i data-lucide="bell-ring" class="icon-cyan"></i>
+                    </div>
+                    <div class="stat-value" id="alert-count">24</div>
+                    <div class="stat-trend trend-up"><i data-lucide="arrow-up-right"></i> 2% vs last week</div>
+                </div>
+            </div>
+
+            <div class="charts-grid-main">
+                <!-- Ransomware Trends Chart -->
+                <div class="glass-card chart-container">
+                    <div class="card-header">
+                        <h2>Ransomware Incident Trends</h2>
+                        <span class="badge">Last 12 Months</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="ransomwareChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- MITRE ATT&CK Mapping Radar -->
+                <div class="glass-card chart-container">
+                    <div class="card-header">
+                        <h2>MITRE ATT&CK Tactics (Top 6)</h2>
+                        <span class="badge">Last 30 Days</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="mitreChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tables-grid">
+                <!-- Recent Phishing & Malware List -->
+                <div class="glass-card table-container">
+                    <div class="card-header">
+                        <h2>Recent High-Confidence IoCs</h2>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Indicator</th>
+                                <th>Severity</th>
+                                <th>Detected</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ioc-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Malicious IPs by Country -->
+                <div class="glass-card list-container">
+                    <div class="card-header">
+                        <h2>Top Attacking Geographies</h2>
+                    </div>
+                    <div class="geo-list" id="geo-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
